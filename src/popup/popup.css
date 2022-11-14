@@ -1,5 +1,16 @@
 body {
-  width: 400px;
+  width: 420px;
   height: 400px;
-  background-color: red;
+  background-color: #f1f1f1;
+  font-family: 'Roboto';
+}
+
+.popup-title {
+  font-size: 24px !important;
+  text-align: center !important;
+}
+
+.inputBox-label {
+  font-size: 16px !important;
+  color: red;
 }
