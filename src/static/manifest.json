@@ -13,7 +13,8 @@
     "default_title": "CORS Extension",
     "default_icon": "icon1.png"
   },
-  "permissions": ["storage"],
+  "permissions": ["storage", "tabs", "alarms", "scripting" ],
+  "host_permissions": ["*://*/*"],
   "options_page": "options.html",
   "background": {
     "service_worker": "background.js"

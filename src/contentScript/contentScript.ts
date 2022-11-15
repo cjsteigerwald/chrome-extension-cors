@@ -1,4 +1,4 @@
 
-chrome.runtime.sendMessage('From the content script!', (res) => {
-  console.log(res);
-});
+// chrome.runtime.sendMessage('From the content script!', (res) => {
+//   console.log(res);
+// });
