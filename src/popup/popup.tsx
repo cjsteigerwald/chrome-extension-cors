@@ -1,121 +1,155 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Box, Button, Card, CardContent, Stack, Typography } from '@mui/material';
+import {
+	Box,
+	Button,
+	Card,
+	CardContent,
+	Stack,
+	Typography,
+} from '@mui/material';
 import ServerCard from '../components/ServerCard/ServerCard';
 import SessionStorageCard from '../components/AddSessionStorageCard/AddSessionStorageCard';
-import { ServerType, getStoredServers, setStoredServers, SessionStorage, getStoredSessionStorage,  Messages, deleteServerTypes, returnSessionStorage } from '../utils/storage';
+import {
+	ServerType,
+	getStoredServers,
+	setStoredServers,
+	getStoredSessionStorage,
+	Messages,
+	deleteServerTypes,
+	returnSessionStorage,
+	getHeader,
+	Cookie,
+	Header,
+} from '../utils/storage';
 
-import './popup.css'
+import './popup.css';
+import ServerForm from '../components/ServerCard/ServerForm';
+import { updateDecorator } from 'typescript';
 
 const App: React.FC<{}> = () => {
-  const [serverType, setServerType] = useState<ServerType[]>([])
-  const [sessionStorage, setSessionStorage] = useState<SessionStorage[]>([])
-  const [isLoaded, setIsLoaded] = useState<boolean>(false)
+	const [servers, setServers] = useState<ServerType[]>([]);
+	const [server, setServer] = useState<ServerType>(null);
+	const [headers, setHeaders] = useState<Header[]>([]);
+	const [isLoaded, setIsLoaded] = useState<boolean>(false);
+	let theUpdatedServer: ServerType;
 
-  useEffect(() => {
-    getStoredServers()
-      .then(storedServers => {
-        // initilize serverType if does not already exist in storage
-        if (storedServers.length < 1) {
-          const initialServerValues: ServerType[] = [
-            {
-              name: 'target',
-              url: ''
-            },
-            {
-              name: 'local dev',
-              url: ''
-            }
-          ]
-          setStoredServers(initialServerValues)
-            .then(() => {
-              setServerType(initialServerValues);
-              setIsLoaded(prevState => !prevState)
-            })
-        } else {
-          setServerType(storedServers);
-          setIsLoaded(prevState => !prevState)
-        }
-      })
+	useEffect(() => {
+		getStoredServers().then((storedServers) => {
+			// initilize servers if does not already exist in storage
+			if (storedServers.length < 1) {
+				const initialServerValues: ServerType[] = [
+					{
+						name: 'target',
+						url: '',
+					},
+					{
+						name: 'local',
+						url: '',
+					},
+				];
+				setStoredServers(initialServerValues).then(() => {
+					setServers(initialServerValues);
+					setIsLoaded(false);
+				});
+			} else {
+				setServers(storedServers);
+				setIsLoaded(true);
+			}
+		});
 
-    getStoredSessionStorage()
-      .then(storedSessionStorage => {
-        setSessionStorage(storedSessionStorage);
-      })
+		// getStoredSessionStorage()
+		//   .then(storedSessionStorage => {
+		//     setHeaders(storedSessionStorage);
+		//   })
+	}, []);
 
-  }, [])
+	const onUpdateUrl = (updatedServer: ServerType): void => {
+		theUpdatedServer = updatedServer;
+	}; // onUpdateUrl
 
-  const onUpdateUrl = (updatedServer: ServerType):void => {
-    const tempServers = serverType.map((server: ServerType) => {
-      if (server.name === updatedServer.name) {
-        return {        
-          ...updatedServer,
-        };
-      }
-      return server;   
-    })
-    setStoredServers(tempServers)
-    .then(() => {
-      setServerType(tempServers);
-    })
-  } // onUpdateUrl
+	const updateUrl = (): void => {
+		const tempServers = servers.map((server: ServerType) => {
+			if (server.name === theUpdatedServer.name) {
+				return {
+					...theUpdatedServer,
+				};
+			}
+			return server;
+		});
+		setStoredServers(tempServers).then(() => {
+			setServers(tempServers);
+		});
+	};
 
-  let sessionStore: SessionStorage[] = []
-  const handleLoadButton = () => {
-    console.log('Testing onUpdateUrl', onUpdateUrl)
-    setIsLoaded(prevState => !prevState)
-    returnSessionStorage().then(resp => {
-      setSessionStorage(resp);
-    })
-  }
+	const updateServers = (updateServers: ServerType[]) => {
+		setStoredServers(updateServers).then(() => {
+			setServers(updateServers);
+			setIsLoaded(true);
+			console.log('Stored Servers: ', servers);
+		});
+		// returnCookies().then(() => console.log('updateServers -> returnCookies'));
+	};
 
-  const handleClearButton = () => {
-    const test = deleteServerTypes()    
-    console.log('Clear Button')
-  }
+	let sessionStore: Header[] = [];
+	const handleLoadButton = () => {
+		//  updateUrl();
+		setIsLoaded(!isLoaded);
 
-  return (
-   <Box mx='8px' my='16px'>
-    <Typography className='popup-title'>CORS Extension</Typography>
-    <Card>
-      <CardContent>
-        {
-          serverType.map((server: ServerType, index) => <ServerCard 
-          key={index} 
-          serverType={server}
-          onUpdateUrl={onUpdateUrl}/>)
-        }
-        <Box textAlign="center">
-       
-          <Button 
-            style={{ margin: '5px'}}
-            variant="contained" 
-            color={isLoaded === false ? 'success' : 'primary'}
-            onClick={() => handleLoadButton()}>
-            {isLoaded === false ? 'Load' : 'Update'}
-          </Button>
-          <Button 
-            style={{ margin: '5px'}}
-            variant="contained" 
-            color='error'
-            onClick={() => handleClearButton()}>
-              Clear
-          </Button>        
-        </Box>
-      </CardContent>      
-    </Card>
-    {
-      sessionStorage ? <SessionStorageCard sessionStorage={sessionStorage} /> : null
-    }    
-   </Box>
-  )
-} // APP
+		// returnCookies()
+		// setIsLoaded(prevState => !prevState)
+		// returnSessionStorage().then(resp => {
+		//   setHeaders(resp);
+		// })
+	};
 
+	const onClearServers = () => {
+		const initialServerValues: ServerType[] = [
+			{
+				name: 'target',
+				url: '',
+			},
+			{
+				name: 'local',
+				url: '',
+			},
+		];
+		setStoredServers(initialServerValues).then(() => {
+			console.log('In arrow function');
+			setServers(initialServerValues);
+			setIsLoaded((prevState) => !prevState);
+		});
+		console.log('onClearServerUrl');
+	};
 
+	const addHeader = (headerName: string): void => {
+		console.log('popup header: ', headerName);
+		const test = getHeader(headerName).then((header: Header) => {
+			console.log('this is header: ', header);
+			setHeaders([header]);
+		});
+	};
 
+	const clearServers = () => {
+		onClearServers();
+		console.log('clearServers');
+	};
 
-const container = document.createElement('div')
-document.body.appendChild(container)
-const root = createRoot(container)
-root.render(<App />)
+	return (
+		<div className='app'>
+			<ServerForm
+				onAddServers={updateServers}
+				onClearServers={clearServers}
+				servers={servers}
+			/>
+			{headers ? (
+				<SessionStorageCard headers={headers} onAddHeader={addHeader} />
+			) : null}
+		</div>
+	);
+}; // APP
 
+const container = document.createElement('div');
+document.body.appendChild(container);
+const root = createRoot(container);
+root.render(<App />);

@@ -1,8 +1,8 @@
 import { resolveComponentProps } from '@mui/base';
 export interface ChromeStorage {
   serverType?: ServerType[];
-  sessionStorage?: SessionStorage[];
-  cookies?: Cookies[];
+  headers?: Header[];
+  cookies?: Cookie[];
   localStorage?: LocalStorage[];
 }
 
@@ -11,12 +11,12 @@ export interface ServerType {
   url: string;
 }
 
-export interface SessionStorage {
+export interface Header {
   name: string;
   value: string;
 }
 
-export interface Cookies {
+export interface Cookie {
   name: string;
   value: string
 }
@@ -34,6 +34,7 @@ export enum Messages {
 
 
 export const setStoredServers = (serverType: ServerType[]): Promise<void> => {
+  console.log('In setStoredServers: ', serverType)
   const vals: ChromeStorage = {
     serverType,
   }
@@ -54,9 +55,9 @@ export const getStoredServers = (): Promise<ServerType []> => {
   })
 }
 
-export const setStoredSessionStorage = (sessionStorage: SessionStorage[]): Promise<void> => {
+export const setStoredSessionStorage = (headers: Header[]): Promise<void> => {
   const vals: ChromeStorage = {
-    sessionStorage,
+    headers,
   }
   return new Promise((resolve) => {
     chrome.storage.local.set(vals, () => {
@@ -65,18 +66,18 @@ export const setStoredSessionStorage = (sessionStorage: SessionStorage[]): Promi
   })
 }
 
-export const getStoredSessionStorage = (): Promise<SessionStorage []> => {
-  const keys: LocalStorageKeys[] = ['sessionStorage'];
+export const getStoredSessionStorage = (): Promise<Header[]> => {
+  const keys: LocalStorageKeys[] = ['headers'];
   return new Promise((resolve) => {
     chrome.storage.local.get(keys, (res: ChromeStorage) => {
-      resolve(res.sessionStorage ?? []);
+      resolve(res.headers ?? []);
     })
   })
 }
 
 // helper function for returnSessionStorage()
-const getSessionStorage = (): SessionStorage[] => {
-  let aSessionStorage: SessionStorage[] = [];
+const getSessionStorage = (): Header[] => {
+  let aSessionStorage: Header[] = [];
 
   Object.keys(sessionStorage).forEach((key) => {
     console.log('', [key] + ':' + '', sessionStorage.getItem(key))
@@ -85,10 +86,10 @@ const getSessionStorage = (): SessionStorage[] => {
   return aSessionStorage;
 }
 
-export const returnSessionStorage = (): Promise<SessionStorage []> => {
-  return new Promise<SessionStorage []>((resolve) => {
+export const returnSessionStorage = (): Promise<Header[]> => {
+  return new Promise<Header[]>((resolve) => {
 
-      let aSesssionStorage: SessionStorage[] = []
+      let headers: Header[] = []
       chrome.tabs.query({
         url: "*://www.google.com/*",
         currentWindow: true,
@@ -103,22 +104,38 @@ export const returnSessionStorage = (): Promise<SessionStorage []> => {
             console.log('This is response: ', JSON.stringify(resp[0].result))
             // console.log('This is tab: ', tabs[0])
             // console.log('below script: ', sessionStorage.length)
-            aSesssionStorage = resp[0].result
-            console.log('aSessionStorage: ', aSesssionStorage)
+            headers = resp[0].result
+            console.log('aSessionStorage: ', headers)
             resolve (resp[0].result)
           })
         } 
       })
-  })
-  
+  })  
 }
 
 export const deleteServerTypes = () => {
-  const keys: LocalStorageKeys[] = ['serverType'];
-  chrome.storage.local.remove(keys, () => {
-    console.log('Removed items for the key: ' + keys);
-  });
+  const clearUrls: ServerType[] = [
+    {
+      name: 'target',
+      url: ''
+    },
+    {
+      name: 'local',
+      url: ''
+    }
+  ]
+}
 
+export const getHeader = async (headerName: string): Promise<Header> => {
+  const cookies = await chrome.cookies.getAll( { url: "https://www.google.com" })
+
+  const aCookie = cookies.reduce<Cookie>((accumulator,cookie)  => {
+    if (cookie.name === headerName){
+     return {name: cookie.name, value: cookie.value}
+    }
+    return accumulator;
+   }, {} as Cookie)
+  return aCookie;
 }
 
 

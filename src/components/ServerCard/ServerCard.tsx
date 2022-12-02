@@ -1,32 +1,37 @@
-import { Box, Grid, IconButton, TextField, Paper, Typography, Card, CardContent } from '@mui/material';
+import { TextField } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { ServerType } from '../../utils/storage';
 
 const ServerCard: React.FC<{
-  onUpdateUrl: (arg: ServerType) => void;
-  serverType: ServerType;
-}> = ({serverType, onUpdateUrl}) => {
-  const [serverUrl, setServerUrl] = useState<string>('');
+	server: ServerType;
+	onSaveServerUrl: (updatedServer: ServerType) => void;
+}> = ({ server, onSaveServerUrl }) => {
+	const [serverUrl, setServerUrl] = useState<string>('');
 
-  useEffect(() => {
-    setServerUrl(serverType.url)
-    
-  }, [])
+	useEffect(() => {
+		setServerUrl(server.url);
+	}, []);
 
- onUpdateUrl({name: serverType.name, url: serverUrl});
+	useEffect(() => {
+		console.log(serverUrl);
+		onSaveServerUrl({ name: server.name, url: serverUrl });
+	}, [serverUrl]);
 
-  return (  
-    <TextField 
-    style={{ marginTop: '10px', marginBottom: '20px'}}
-    required
-    fullWidth
-    value={serverUrl}
-    placeholder={serverType.name + ' url'}
-    onChange={(event) => setServerUrl(event.target.value)}
-    variant='standard'/>   
-  )
-}
+	return (
+		<TextField
+			style={{ marginTop: '10px', marginBottom: '20px' }}
+			required
+			fullWidth
+			value={serverUrl}
+			placeholder={server.name + ' url'}
+			onChange={(e) => setServerUrl(e.target.value)}
+			variant='standard'
+		/>
+	);
+};
 
 export default ServerCard;
 
-{/* <Typography className='inputBox-label'>Server Detail</Typography> */}
+{
+	/* <Typography className='inputBox-label'>Server Detail</Typography> */
+}

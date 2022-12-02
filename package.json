@@ -8,6 +8,12 @@
     "start": "webpack --watch --progress --config webpack.dev.js",
     "build": "webpack --watch --progress --config webpack.prod.js"
   },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
   "author": "Chris Steigerwald",
   "license": "ISC",
   "devDependencies": {
