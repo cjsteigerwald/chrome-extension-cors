@@ -91,7 +91,7 @@ export const returnSessionStorage = (): Promise<Header[]> => {
 
       let headers: Header[] = []
       chrome.tabs.query({
-        url: "*://www.google.com/*",
+        url: "*://webtest.stage.att.com/*",
         currentWindow: true,
       }, (tabs) => {
         if (tabs.length > 0) {
@@ -126,8 +126,8 @@ export const deleteServerTypes = () => {
   ]
 }
 
-export const getHeader = async (headerName: string): Promise<Header> => {
-  const cookies = await chrome.cookies.getAll( { url: "https://www.google.com" })
+export const getCookie = async (headerName: string): Promise<Cookie> => {
+  const cookies = await chrome.cookies.getAll( { url: "https://webtest.stage.att.com/icamct3ilmportal/icam-firstnet/firstnet-agency-landing-page" })
 
   const aCookie = cookies.reduce<Cookie>((accumulator,cookie)  => {
     if (cookie.name === headerName){

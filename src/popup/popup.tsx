@@ -18,19 +18,21 @@ import {
 	Messages,
 	deleteServerTypes,
 	returnSessionStorage,
-	getHeader,
 	Cookie,
 	Header,
+	getCookie,
 } from '../utils/storage';
 
 import './popup.css';
 import ServerForm from '../components/ServerCard/ServerForm';
 import { updateDecorator } from 'typescript';
+import CookieCard from '../components/cookies/AddCookieCard/AddCookieCard';
 
 const App: React.FC<{}> = () => {
 	const [servers, setServers] = useState<ServerType[]>([]);
 	const [server, setServer] = useState<ServerType>(null);
 	const [headers, setHeaders] = useState<Header[]>([]);
+	const [cookies, setCookies] = useState<Cookie[]>([]);
 	const [isLoaded, setIsLoaded] = useState<boolean>(false);
 	let theUpdatedServer: ServerType;
 
@@ -124,9 +126,16 @@ const App: React.FC<{}> = () => {
 
 	const addHeader = (headerName: string): void => {
 		console.log('popup header: ', headerName);
-		const test = getHeader(headerName).then((header: Header) => {
+		const test = getCookie(headerName).then((header: Header) => {
 			console.log('this is header: ', header);
 			setHeaders([header]);
+		});
+	};
+	const addCookie = (cookieName: string): void => {
+		console.log('popup cookie: ', cookieName);
+		const test = getCookie(cookieName).then((cookie: Cookie) => {
+			console.log('this is cookie: ', cookie);
+			setCookies([cookie]);
 		});
 	};
 
@@ -145,6 +154,9 @@ const App: React.FC<{}> = () => {
 			{headers ? (
 				<SessionStorageCard headers={headers} onAddHeader={addHeader} />
 			) : null}
+			{cookies ? (
+				<CookieCard cookies={cookies} onAddCookie={addCookie} />
+			): null}
 		</div>
 	);
 }; // APP
