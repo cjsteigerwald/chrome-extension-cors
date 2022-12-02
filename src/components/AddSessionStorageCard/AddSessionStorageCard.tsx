@@ -32,7 +32,6 @@ const SessionStorageCard: React.FC<{
 	headers: Header[];
 	onAddHeader: (header: string) => void;
 }> = ({ headers, onAddHeader }) => {
-	const [headerName, setHeaderName] = useState<string>('');
 	// pass input to useInput hook to validate
 	const {
 		value: enteredHeaderName,
