@@ -1,0 +1,20 @@
+[
+	{
+		"id": 1,
+		"priority": 1,
+		"action": {
+			"type": "modifyHeaders",
+			"requestHeaders": [
+				{
+					"header": "Origin",
+					"operation": "set",
+					"value": "script-src https://securesite.com http://localhost:3000; style-src https://secure.alphasights.com http://localhost:3000; img-src https://secure.alphasights.com http://localhost:3000; form-action https://secure.alphasights.com http://localhost:3000; frame-src https://secure.alphasights.com http://localhost:3000; connect-src https://secure.alphasights.com http://localhost:3000"
+				}
+			]
+		},
+		"condition": {
+			"urlFilter": "example.com",
+			"resourceType": ["main_frame", "sub_frame"]
+		}
+	}
+]

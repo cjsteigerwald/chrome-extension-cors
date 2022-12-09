@@ -3,20 +3,18 @@ import {
 	Grid,
 	IconButton,
 	TextField,
-	Paper,
 	Typography,
 	Card,
 	CardContent,
 	Tooltip,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import CachedIcon from '@mui/icons-material/Cached';
-import { Header } from '../../utils/storage';
-import ListSessionStorageCard from '../ListSessionStorageCard/ListSessionStorageCard';
-import useInput from '../../hooks/use-input';
+import { Header } from '../../../utils/storage';
+import ListHeaderCard from '../ListHeaderCard/ListHeaderCard';
+import useInput from '../../../hooks/use-input';
 
-const SessionStorageCardContainer: React.FC<{
+const HeaderCardContainer: React.FC<{
 	children: React.ReactNode | React.ReactNode[];
 }> = ({ children }) => {
 	return (
@@ -28,7 +26,7 @@ const SessionStorageCardContainer: React.FC<{
 	);
 };
 
-const SessionStorageCard: React.FC<{
+const HeaderCard: React.FC<{
 	headers: Header[];
 	onAddHeader: (header: string) => void;
 }> = ({ headers, onAddHeader }) => {
@@ -42,12 +40,7 @@ const SessionStorageCard: React.FC<{
 		reset: resetHeaderNameInput,
 	} = useInput((value) => value.trim() !== '');
 
-	// const handleAddUrlButton = () => {
-	// 	console.log('This is sessionStorage: ', sessionStorage);
-	// 	console.log(enteredHeaderName);
-	// };
-
-	const buildListSessionStorageBox = (headers: Header[]) => {
+	const buildListHeaderBox = (headers: Header[]) => {
 		return (
 			<Box pt={1}>
 				<Typography
@@ -57,27 +50,27 @@ const SessionStorageCard: React.FC<{
 					Headers
 				</Typography>
 				{headers.map((header: Header, index) =>
-					buildListSessionStorageCard(header, index)
+					buildListHeaderCard(header, index)
 				)}
 			</Box>
 		);
 	};
 
-	const buildListSessionStorageCard = (header: Header, index: number) => {
-		return <ListSessionStorageCard key={index} header={header} />;
-	};
+	const buildListHeaderCard = (header: Header, index: number) => {
+		console.log('Updated headers: ', headers);
 
-	const headerNameInputColor = enteredHeaderNameHasError ? 'error' : 'primary';
+		return <ListHeaderCard key={index} header={header} />;
+	};
 
 	const headerNameHandler = () => {
 		onAddHeader(enteredHeaderName);
 		resetHeaderNameInput();
-		// console.log('This is sessionStorage: ', sessionStorage);
-		// console.log(enteredHeaderName);
 	};
 
+	const headerNameInputColor = enteredHeaderNameHasError ? 'error' : 'primary';
+
 	return (
-		<SessionStorageCardContainer>
+		<HeaderCardContainer>
 			<Grid container justifyContent='space-evenly'>
 				<Grid item xs={11}>
 					<TextField
@@ -104,14 +97,10 @@ const SessionStorageCard: React.FC<{
 					</Tooltip>
 				</Grid>
 
-				{headers.length > 0 ? buildListSessionStorageBox(headers) : null}
+				{headers.length > 0 ? buildListHeaderBox(headers) : null}
 			</Grid>
-		</SessionStorageCardContainer>
+		</HeaderCardContainer>
 	);
 };
 
-export default SessionStorageCard;
-
-{
-	/* <Typography className='inputBox-label'>Server Detail</Typography> */
-}
+export default HeaderCard;

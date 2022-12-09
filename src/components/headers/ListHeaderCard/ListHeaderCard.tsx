@@ -13,10 +13,10 @@ import {
 import React, { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import CachedIcon from '@mui/icons-material/Cached';
-import { Header, ServerType } from '../../utils/storage';
-import './ListSessionStorageCard.css';
+import { Header, ServerType } from '../../../utils/storage';
+import './ListHeaderCard.css';
 
-const ListSessionStorageCard: React.FC<{
+const ListHeaderCard: React.FC<{
 	header: Header;
 }> = ({ header }) => {
 	// const [header, setHeader] = useState<string>('');
@@ -50,7 +50,7 @@ const ListSessionStorageCard: React.FC<{
 	);
 };
 
-export default ListSessionStorageCard;
+export default ListHeaderCard;
 
 {
 	/* <Typography className='inputBox-label'>Server Detail</Typography> */

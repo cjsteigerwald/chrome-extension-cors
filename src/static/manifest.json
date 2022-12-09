@@ -1,28 +1,45 @@
 {
-  "manifest_version": 3,
-  "name": "CORS Extension",
-  "description": "Extensions to manipulate headers",
-  "version": "1.0.0",
-  "icons": {
-    "16": "icon1.png",
-    "48": "icon1.png",
-    "128": "icon1.png"
-  },
-  "action": {
-    "default_popup": "popup.html",
-    "default_title": "CORS Extension",
-    "default_icon": "icon1.png"
-  },
-  "permissions": ["storage", "tabs", "alarms", "scripting", "cookies" ],
-  "host_permissions": ["*://*/*"],
-  "options_page": "options.html",
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["contentScript.js"]
-    }
-  ]
+	"manifest_version": 3,
+	"name": "CORS Extension",
+	"description": "Extensions to manipulate headers",
+	"version": "1.0.0",
+	"icons": {
+		"16": "icon1.png",
+		"48": "icon1.png",
+		"128": "icon1.png"
+	},
+	"action": {
+		"default_popup": "popup.html",
+		"default_title": "CORS Extension",
+		"default_icon": "icon1.png"
+	},
+	"permissions": [
+		"storage",
+		"tabs",
+		"alarms",
+		"scripting",
+		"cookies",
+		"declarativeNetRequest",
+		"declarativeNetRequestFeedback"
+	],
+	"declarative_net_request": {
+		"rule_resources": [
+			{
+				"id": "ruleset_1",
+				"enabled": false,
+				"path": "rules1.json"
+			}
+		]
+	},
+	"host_permissions": ["*://*/*"],
+	"options_page": "options.html",
+	"background": {
+		"service_worker": "background.js"
+	},
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["contentScript.js"]
+		}
+	]
 }

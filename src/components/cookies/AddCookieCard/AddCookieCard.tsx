@@ -1,10 +1,18 @@
 import React from 'react';
-import {Box, Card, CardContent, Grid, IconButton, TextField, Tooltip, Typography} from '@mui/material';
+import {
+	Box,
+	Card,
+	CardContent,
+	Grid,
+	IconButton,
+	TextField,
+	Tooltip,
+	Typography,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import useInput from '../../../hooks/use-input';
 import { Cookie } from '../../../utils/storage';
 import ListCookieCard from '../ListCookieCard/ListCookieCard';
-
 
 const CookieCardContainer: React.FC<{
 	children: React.ReactNode | React.ReactNode[];
@@ -21,7 +29,7 @@ const CookieCardContainer: React.FC<{
 const CookieCard: React.FC<{
 	cookies: Cookie[];
 	onAddCookie: (cookie: string) => void;
-}> = ({cookies, onAddCookie}) => {
+}> = ({ cookies, onAddCookie }) => {
 	// use useInput hook to validate input
 	const {
 		value: enteredCookieName,
@@ -39,7 +47,7 @@ const CookieCard: React.FC<{
 					align='center'
 					variant='body1'
 					style={{ marginBottom: '10px' }}>
-					Headers
+					Cookies
 				</Typography>
 				{cookies.map((cookie: Cookie, index) =>
 					buildListCookieCard(cookie, index)
@@ -57,13 +65,11 @@ const CookieCard: React.FC<{
 		resetCookieNameInput();
 	};
 
-	const cookieNameInputColor = enteredCookieNameHasError
-		? 'error'
-		: 'primary';
+	const cookieNameInputColor = enteredCookieNameHasError ? 'error' : 'primary';
 
- return (
-	<CookieCardContainer> 
-		<Grid container justifyContent='space-evenly'>
+	return (
+		<CookieCardContainer>
+			<Grid container justifyContent='space-evenly'>
 				<Grid item xs={11}>
 					<TextField
 						color={cookieNameInputColor}
@@ -88,12 +94,10 @@ const CookieCard: React.FC<{
 						</span>
 					</Tooltip>
 				</Grid>
-
 				{cookies.length > 0 ? buildListCookieBox(cookies) : null}
 			</Grid>
-	</CookieCardContainer>
-
- )
+		</CookieCardContainer>
+	);
 };
 
 export default CookieCard;

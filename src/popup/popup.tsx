@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-	Box,
-	Button,
-	Card,
-	CardContent,
-	Stack,
-	Typography,
-} from '@mui/material';
-import ServerCard from '../components/ServerCard/ServerCard';
-import SessionStorageCard from '../components/AddSessionStorageCard/AddSessionStorageCard';
-import {
 	ServerType,
 	getStoredServers,
 	setStoredServers,
@@ -21,12 +11,19 @@ import {
 	Cookie,
 	Header,
 	getCookie,
+	getAllCookies,
+	getHeader,
+	setLocalHeaders,
+	getCurrentTab,
+	isCurrentTab,
 } from '../utils/storage';
 
 import './popup.css';
 import ServerForm from '../components/ServerCard/ServerForm';
 import { updateDecorator } from 'typescript';
 import CookieCard from '../components/cookies/AddCookieCard/AddCookieCard';
+import HeaderCard from '../components/headers/AddHeaderCard/AddHeaderCard';
+import GenericCard from '../components/generic/GenericCard/GenericCard';
 
 const App: React.FC<{}> = () => {
 	const [servers, setServers] = useState<ServerType[]>([]);
@@ -34,6 +31,10 @@ const App: React.FC<{}> = () => {
 	const [headers, setHeaders] = useState<Header[]>([]);
 	const [cookies, setCookies] = useState<Cookie[]>([]);
 	const [isLoaded, setIsLoaded] = useState<boolean>(false);
+	const [isHeaderError, setIsHeaderError] = useState<boolean>(false);
+	const [errorHeaderMessage, setHeaderErrorMessage] = useState<string>('');
+	const [isCookieError, setIsCookieError] = useState<boolean>(false);
+	const [errorCookieMessage, setCookieErrorMessage] = useState<string>('');
 	let theUpdatedServer: ServerType;
 
 	useEffect(() => {
@@ -85,11 +86,11 @@ const App: React.FC<{}> = () => {
 	};
 
 	const updateServers = (updateServers: ServerType[]) => {
-		setStoredServers(updateServers).then(() => {
-			setServers(updateServers);
-			setIsLoaded(true);
-			console.log('Stored Servers: ', servers);
-		});
+		// setStoredServers(updateServers).then(() => {
+		// 	setServers(updateServers);
+		// 	setIsLoaded(true);
+		// 	console.log('Stored Servers: ', servers);
+		// });
 		// returnCookies().then(() => console.log('updateServers -> returnCookies'));
 	};
 
@@ -124,20 +125,66 @@ const App: React.FC<{}> = () => {
 		console.log('onClearServerUrl');
 	};
 
+	const addLocalHeaders = (): void => {
+		const testUrl = isCurrentTab('java2blog.com').then((resp) => {
+			console.log('Is target tab the current tab: ', resp);
+		});
+		// const testUrl = getCurrentTab().then((resp) =>
+		// 	console.log('In Popup: ', resp)
+		// );
+		// console.log('TestUrl: ', testUrl);
+		const setHeaders = setLocalHeaders(headers);
+	};
+
+	const addAllHeaders = (): void => {
+		const setAllHeaders = returnSessionStorage().then((headers: Header[]) => {
+			setHeaders(headers);
+		});
+	};
+
 	const addHeader = (headerName: string): void => {
-		console.log('popup header: ', headerName);
-		const test = getCookie(headerName).then((header: Header) => {
-			console.log('this is header: ', header);
-			setHeaders([header]);
+		const updateHeaders: Header[] = [...headers];
+		const aHeader = getHeader(headerName).then((header) => {
+			if (header === undefined) {
+				setIsHeaderError(true);
+				setHeaderErrorMessage(`Header: ${headerName} not found!`);
+				return;
+			}
+			setIsHeaderError(false);
+			setHeaderErrorMessage('');
+			updateHeaders.push(header);
+			setHeaders(updateHeaders);
 		});
 	};
+
 	const addCookie = (cookieName: string): void => {
-		console.log('popup cookie: ', cookieName);
-		const test = getCookie(cookieName).then((cookie: Cookie) => {
-			console.log('this is cookie: ', cookie);
-			setCookies([cookie]);
+		const updateCookies: Cookie[] = [...cookies];
+		const aCookie = getCookie(cookieName).then((cookie: Cookie) => {
+			if (cookie === undefined) {
+				setIsCookieError(true);
+				setCookieErrorMessage(`Cookie: ${cookieName} not found!`);
+			}
+			setIsCookieError(false);
+			setCookieErrorMessage('');
+			updateCookies.push(cookie);
+			setCookies(updateCookies);
 		});
 	};
+
+	const addAllCookies = () => {
+		const targetUrl = 'https://google.com/';
+		const setAllCookies = getAllCookies(targetUrl).then((cookies) => {
+			setCookies(cookies);
+		});
+		console.log('Popup: addAllCookies');
+	};
+
+	// const addAllCookies = (): void => {
+	// 	const updateCookies = getAllCookies().then((cookies: Cookie[]) => {
+	// 		console.log('Cookies: ', cookies);
+	// 		setCookies(cookies);
+	// 	});
+	// };
 
 	const clearServers = () => {
 		onClearServers();
@@ -146,17 +193,32 @@ const App: React.FC<{}> = () => {
 
 	return (
 		<div className='app'>
+			<button onClick={addLocalHeaders}>Update</button>
 			<ServerForm
 				onAddServers={updateServers}
 				onClearServers={clearServers}
 				servers={servers}
 			/>
 			{headers ? (
-				<SessionStorageCard headers={headers} onAddHeader={addHeader} />
+				<GenericCard
+					genericValues={headers}
+					onAddValue={addHeader}
+					onGetAll={addAllHeaders}
+					title='Header'
+					isError={isHeaderError}
+					errorMessage={errorHeaderMessage}
+				/>
 			) : null}
 			{cookies ? (
-				<CookieCard cookies={cookies} onAddCookie={addCookie} />
-			): null}
+				<GenericCard
+					genericValues={cookies}
+					onAddValue={addCookie}
+					onGetAll={addAllCookies}
+					title='Cookie'
+					isError={isCookieError}
+					errorMessage={errorCookieMessage}
+				/>
+			) : null}
 		</div>
 	);
 }; // APP
