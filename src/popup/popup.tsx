@@ -16,6 +16,8 @@ import {
 	setLocalHeaders,
 	getCurrentTab,
 	isCurrentTab,
+	setStoredSessionStorage,
+	setSessionStorage,
 } from '../utils/storage';
 
 import './popup.css';
@@ -126,14 +128,18 @@ const App: React.FC<{}> = () => {
 	};
 
 	const addLocalHeaders = (): void => {
-		const testUrl = isCurrentTab('java2blog.com').then((resp) => {
-			console.log('Is target tab the current tab: ', resp);
+		// const testUrl = isCurrentTab('java2blog.com').then((resp) => {
+		// 	console.log('Is target tab the current tab: ', resp);
+		// });
+		// const setHeaders = setLocalHeaders(headers);
+
+		const test = setSessionStorage('java2blog.com', headers).then((resp) => {
+			console.log('I am the response: ', resp);
 		});
 		// const testUrl = getCurrentTab().then((resp) =>
 		// 	console.log('In Popup: ', resp)
 		// );
 		// console.log('TestUrl: ', testUrl);
-		const setHeaders = setLocalHeaders(headers);
 	};
 
 	const addAllHeaders = (): void => {

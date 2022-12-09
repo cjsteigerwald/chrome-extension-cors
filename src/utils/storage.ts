@@ -204,6 +204,51 @@ export const returnSessionStorage = (): Promise<Header[]> => {
 	});
 };
 
+const setSessionHeaders = (test: string, targetHeaders: Header[]): Header[] => {
+	// const aHeader: Header[] = targetHeaders;
+	const aHeader: Header[] = [{ name: 'Chris', value: test }];
+	console.log('In here: ', test);
+	return aHeader;
+};
+
+export const setSessionStorage = (
+	targetUrl: string,
+	targetHeaders: Header[]
+): Promise<Header[]> => {
+	console.log('Top of hour: ', targetHeaders);
+	return new Promise<Header[]>((resolve) => {
+		const testHeader: Header = { name: 'chris', value: 'testing an idea' };
+		let headers: Header[] = [];
+		chrome.tabs.query(
+			{
+				url: `*://${targetUrl}/*`,
+				currentWindow: true,
+			},
+			(tabs) => {
+				if (tabs.length > 0) {
+					const id = tabs[0].id;
+					console.log('tab id: ', tabs[0]);
+					chrome.scripting.executeScript(
+						{
+							target: { tabId: id },
+							func: setSessionHeaders,
+							args: [targetUrl, headers],
+						},
+						(resp) => {
+							// console.log('This is response: ', JSON.stringify(resp[0].result));
+							// console.log('This is tab: ', tabs[0])
+							// console.log('below script: ', sessionStorage.length)
+							headers = resp[0].result;
+							// console.log('aSessionStorage: ', headers);
+							resolve(resp[0].result);
+						}
+					);
+				}
+			}
+		);
+	});
+};
+
 export const deleteServerTypes = () => {
 	const clearUrls: ServerType[] = [
 		{
