@@ -4,7 +4,7 @@ import useInput from '../../hooks/use-input';
 import { ServerType } from '../../utils/storage';
 
 const ServerForm = ({ onAddServers, onClearServers, servers }) => {
-	console.log('ServerForm Servers: ', servers)
+	console.log('ServerForm Servers: ', servers);
 	// pass input to useInput hook to validate
 	const {
 		value: enteredTargetServerUrl,
@@ -32,6 +32,8 @@ const ServerForm = ({ onAddServers, onClearServers, servers }) => {
 	const formClearHandler = () => {
 		console.log('servers: ', servers[0].url);
 		onClearServers();
+		resetTargetServerUrlInput();
+		resetLocalServerUrlInput();
 	};
 
 	const formSubmissionHandler = (event) => {
@@ -53,7 +55,7 @@ const ServerForm = ({ onAddServers, onClearServers, servers }) => {
 	};
 
 	const targetServerPlaceholder =
-		servers[0]?.url !== '' ? servers[1]?.url : 'Enter target url...';
+		servers[0]?.url !== '' ? servers[0]?.url : 'Enter target url...';
 
 	const localServerPlaceholder =
 		servers[1]?.url !== '' ? servers[1]?.url : 'Enter local url...';

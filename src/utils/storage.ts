@@ -204,26 +204,27 @@ export const returnSessionStorage = (): Promise<Header[]> => {
 	});
 };
 
-
-
-const setSessionHeaders = (targetUrl: string, targetHeaders: Header[]): void => {
+const setSessionHeaders = (
+	targetUrl: string,
+	targetHeaders: Header[]
+): void => {
 	try {
-		targetHeaders.forEach(header => {
+		targetHeaders.forEach((header) => {
 			sessionStorage.setItem(header.name, header.value);
-		})
-	} catch(err) {
-		console.log('Session Storage write error')
+		});
+	} catch (err) {
+		console.log('Session Storage write error');
 	}
 };
 
 export const setSessionStorage = (
 	targetUrl: string,
 	targetHeaders: Header[]
-): Promise<boolean> => {	
+): Promise<boolean> => {
 	console.log('Top of hour: ', targetHeaders);
 	return new Promise<boolean>((resolve) => {
 		// if no url or headers return false
-		if (targetUrl.length == 0 || targetHeaders.length == 0 ) {
+		if (targetUrl.length == 0 || targetHeaders.length == 0) {
 			resolve(false);
 		}
 		chrome.tabs.query(
@@ -241,7 +242,7 @@ export const setSessionStorage = (
 							func: setSessionHeaders,
 							args: [targetUrl, targetHeaders],
 						},
-						(resp) => {							
+						(resp) => {
 							resolve(true);
 						}
 					);
@@ -264,24 +265,21 @@ export const deleteServerTypes = () => {
 	];
 };
 
-const setLocalCookies = () => [
-	console.log('set')
-]
-
-export const setSessionCookies = async (targetUrl: string, targetCookies: Cookie[]): Promise<boolean> => {
+export const setSessionCookies = async (
+	targetUrl: string,
+	targetCookies: Cookie[]
+): Promise<boolean> => {
 	console.table(targetCookies);
-	targetCookies.forEach(async cookie => {
+	targetCookies.forEach(async (cookie) => {
 		const aCookie = await chrome.cookies.set({
-			url: targetUrl, 
-			name: cookie.name, 
-			value: cookie.value
-		})
+			url: targetUrl,
+			name: cookie.name,
+			value: cookie.value,
+		});
 	});
 
 	return true;
-}
-
-
+};
 
 export const getAllCookies = async (targetUrl: string): Promise<Cookie[]> => {
 	let cookieRes: Cookie[] = [];
@@ -293,8 +291,12 @@ export const getAllCookies = async (targetUrl: string): Promise<Cookie[]> => {
 	return cookieRes;
 };
 
-export const getCookie = async (cookieName: string): Promise<Cookie> => {
-	const cookies = await chrome.cookies.getAll({ url: 'https://www.google.com/' });
+export const getCookie = async (
+	targetUrl: string,
+	cookieName: string
+): Promise<Cookie> => {
+	console.log('Testing targertUrl: ', targetUrl);
+	const cookies = await chrome.cookies.getAll({ url: targetUrl });
 
 	const aCookie = cookies.reduce<Cookie>((accumulator, cookie) => {
 		if (cookie.name === cookieName) {

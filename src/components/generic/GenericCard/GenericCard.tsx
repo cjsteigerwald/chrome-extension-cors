@@ -51,8 +51,6 @@ const GenericCard: React.FC<{
 		reset: resetGenericValueNameInput,
 	} = useInput((value) => value.trim() !== '');
 
-	console.log('In Generic Card: ', genericValues);
-
 	const buildGenericListBox = (genericValues: Cookie[] | Header[]) => {
 		return (
 			<Box pt={1}>
@@ -80,11 +78,6 @@ const GenericCard: React.FC<{
 		onAddValue(enteredGenericValueName);
 		resetGenericValueNameInput();
 	};
-
-	// const onGetAll = () => {
-	// 	console.log('Getting all: ', title);
-	// 	onGetAll();
-	// };
 
 	const genericValueNameInputColor = enteredGenericValueNameHasError
 		? 'error'

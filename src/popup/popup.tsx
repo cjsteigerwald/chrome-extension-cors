@@ -38,8 +38,11 @@ const App: React.FC<{}> = () => {
 	const [errorHeaderMessage, setHeaderErrorMessage] = useState<string>('');
 	const [isCookieError, setIsCookieError] = useState<boolean>(false);
 	const [errorCookieMessage, setCookieErrorMessage] = useState<string>('');
-	const [requestHeaderEnable, setRequestHeaderEnable] = useState<boolean>(false);
+	const [requestHeaderEnable, setRequestHeaderEnable] =
+		useState<boolean>(false);
 	let theUpdatedServer: ServerType;
+	const targetUrl = typeof servers[0] === 'undefined' ? '' : servers[0].url;
+	const localUrl = typeof servers[0] === 'undefined' ? '' : servers[1].url;
 
 	useEffect(() => {
 		getStoredServers().then((storedServers) => {
@@ -63,13 +66,13 @@ const App: React.FC<{}> = () => {
 				setServers(storedServers);
 				setIsLoaded(true);
 			}
-		});		
+		});
 	}, []);
 
 	useEffect(() => {
 		// util/requestRules.ts
 		onChangeRequestHeaders(requestHeaderEnable);
-	}, [requestHeaderEnable])
+	}, [requestHeaderEnable]);
 
 	const onUpdateUrl = (updatedServer: ServerType): void => {
 		theUpdatedServer = updatedServer;
@@ -94,7 +97,6 @@ const App: React.FC<{}> = () => {
 			setServers(updateServers);
 			setIsLoaded(true);
 		});
-		// returnCookies().then(() => console.log('updateServers -> returnCookies'));
 	};
 
 	let sessionStore: Header[] = [];
@@ -123,7 +125,7 @@ const App: React.FC<{}> = () => {
 		setStoredServers(initialServerValues).then(() => {
 			console.log('In arrow function');
 			setServers(initialServerValues);
-			console.log('Servers are: ', servers)
+			console.log('Servers are: ', servers);
 			setIsLoaded((prevState) => !prevState);
 		});
 		console.log('onClearServerUrl');
@@ -131,12 +133,12 @@ const App: React.FC<{}> = () => {
 
 	const addLocalHeaders = (): void => {
 		setSessionStorage('java2blog.com', headers).then((resp) => {
-			console.log('I am the response: ', resp);			
+			console.log('I am the response: ', resp);
 		});
 	};
 
 	const addLocalCookies = (): void => {
-		setSessionCookies('https://java2blog.com', cookies)
+		setSessionCookies('https://java2blog.com', cookies);
 	};
 
 	const addAllHeaders = (): void => {
@@ -161,8 +163,12 @@ const App: React.FC<{}> = () => {
 	};
 
 	const addCookie = (cookieName: string): void => {
+		console.log('In addCookie: ', targetUrl);
+		if (targetUrl === '') {
+			return;
+		}
 		const updateCookies: Cookie[] = [...cookies];
-		const aCookie = getCookie(cookieName).then((cookie: Cookie) => {
+		const aCookie = getCookie(targetUrl, cookieName).then((cookie: Cookie) => {
 			if (cookie === undefined) {
 				setIsCookieError(true);
 				setCookieErrorMessage(`Cookie: ${cookieName} not found!`);
@@ -175,9 +181,11 @@ const App: React.FC<{}> = () => {
 	};
 
 	const addAllCookies = () => {
-		const targetUrl = 'https://www.google.com/';
+		if (targetUrl === '') {
+			return;
+		}
 		getAllCookies(targetUrl).then((cookies) => {
-			console.log('Popup cookies: ', cookies)
+			console.log('Popup cookies: ', cookies);
 			setCookies(cookies);
 		});
 		console.log('Popup: addAllCookies');
@@ -188,9 +196,17 @@ const App: React.FC<{}> = () => {
 		console.log('clearServers');
 	};
 
+	const test = () => {
+		// console.log('testing server name: ', targetUrl);
+		const isCurrent = isCurrentTab(targetUrl)
+	};
+
 	return (
 		<div className='app'>
-			<button onClick={() => setRequestHeaderEnable((prevState) => !prevState)}>{!requestHeaderEnable ? 'Add Rule' : 'Remove Rule'}</button>
+			{/* <button onClick={() => setRequestHeaderEnable((prevState) => !prevState)}>
+				{!requestHeaderEnable ? 'Add Rule' : 'Remove Rule'}
+			</button> */}
+			<button onClick={test}>Test</button>
 			<ServerForm
 				onAddServers={updateServers}
 				onClearServers={clearServers}
